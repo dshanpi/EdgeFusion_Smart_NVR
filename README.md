@@ -10,6 +10,10 @@
 └─────────────┘               └─────────────┘           └─────────────┘
    edgefusion_vision           edgefusion_gateway        阿里百炼
 ```
+<img width="1905" height="928" alt="Snipaste_2026-07-02_15-27-31" src="https://github.com/user-attachments/assets/e2bc250e-7b21-4137-8bdd-02a9486d287f" />
+<img width="1908" height="933" alt="Snipaste_2026-07-02_15-18-28" src="https://github.com/user-attachments/assets/8c357844-a62a-480e-a9b7-a3ff391e29e5" />
+<img width="1888" height="937" alt="Snipaste_2026-07-02_15-07-36" src="https://github.com/user-attachments/assets/40976a5c-f92a-400b-b40c-09ff8eac16eb" />
+<img width="1889" height="925" alt="Snipaste_2026-07-02_15-07-53" src="https://github.com/user-attachments/assets/60e104f3-a21d-484d-babe-3686270863cd" />
 
 ---
 

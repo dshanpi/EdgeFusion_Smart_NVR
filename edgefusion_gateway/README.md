@@ -34,22 +34,27 @@ edgefusion_gateway/
 
 ## 2. 依赖
 
+> **本工程已自包含**：交叉工具链（含 sysroot + FFmpeg 等预编译库）已打包进 `toolchain/` 目录，无需安装百问网 IMX6ULL SDK。获取整个文件夹即可编译。
+
 ### 2.1 主机侧（Ubuntu 开发机）
 
 | 依赖 | 用途 | 安装 |
 |------|------|------|
 | `adb` | 推送二进制/配置/读日志到板子 | `sudo apt install android-tools-adb` |
+| `make`、`gcc`（主机） | 跑 Makefile | `sudo apt install build-essential` |
 | 串口工具 | 访问 IMX6ULL 调试串口 `/dev/ttyACM0` | 仅需 `stty`/`cat`/`printf`（系统自带） |
 | udev 规则 | 修 adb no permissions | 见下文 §2.4 |
-| buildroot 工具链 | 交叉编译 | 见 §2.2 |
 
-### 2.2 交叉工具链（百问网 IMX6ULL SDK）
+### 2.2 交叉工具链（已随工程自包含）
+
+工具链位于 `toolchain/`（百问网 buildroot SDK，约 1.7G）。`toolchain.env` 用脚本相对路径自动定位，整个文件夹可随意移动。
 
 ```
-路径: ~/100ask_imx6ull-sdk/ToolChain/arm-buildroot-linux-gnueabihf_sdk-buildroot
+路径: <工程根>/toolchain/                 # 已自包含，无需外部 SDK
 前缀: arm-buildroot-linux-gnueabihf-      (gcc/g++/ar/strip)
-sysroot: <toolchain>/arm-buildroot-linux-gnueabihf/sysroot
+sysroot: toolchain/arm-buildroot-linux-gnueabihf/sysroot
 目标 ABI: armhf, glibc 2.30, ARMv7 (Cortex-A7)
+gcc 版本: 7.5.0 (Buildroot 2020.02)
 ```
 
 **sysroot 已预编译可直接链接的库（含头文件），无需自行交叉编译 FFmpeg**：

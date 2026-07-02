@@ -1,0 +1,8 @@
+# 编译中间产物
+output/objs/
+
+# 工具链（随工程自包含，体积大，不纳入 git；用 zip/tar 分发整个文件夹）
+toolchain/
+
+# IDE
+.vscode/

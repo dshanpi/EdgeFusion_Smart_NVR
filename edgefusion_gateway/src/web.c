@@ -286,34 +286,77 @@ static void serve_status(int cfd)
 }
 
 /* ─── /api/recordings ─── */
+/* 字符串降序比较（用于录像按名字=时间戳降序，最新在前） */
+static int strcmp_desc(const char *a, const char *b)
+{
+    return strcmp(b, a);
+}
+
 static void serve_recordings(int cfd)
 {
-    char json[8192];
-    int off = 0;
-    off += snprintf(json + off, sizeof(json) - off, "[");
-
+    /* 先收集文件名+大小到动态数组，再排序（按名字降序=最新在前），最后生成 JSON。
+     * 用动态分配避免固定缓冲区溢出——录像文件多时（数百个）固定 8KB 缓冲会截断。 */
     DIR *d = opendir(g_storage_dir);
-    if (d) {
-        struct dirent *e;
-        int first = 1;
-        while ((e = readdir(d)) != NULL) {
-            const char *name = e->d_name;
-            if (name[0] == '.') continue;
-            size_t l = strlen(name);
-            if (l < 5 || strcmp(name + l - 4, ".mp4")) continue;
-            char path[512];
-            snprintf(path, sizeof(path), "%s/%s", g_storage_dir, name);
-            struct stat st;
-            if (stat(path, &st) != 0) continue;
-            if (!first) off += snprintf(json + off, sizeof(json) - off, ",");
-            first = 0;
-            off += snprintf(json + off, sizeof(json) - off,
-                "{\"name\":\"%s\",\"size\":%ld}", name, (long)st.st_size);
-        }
-        closedir(d);
+    if (!d) {
+        const char *e = "[]";
+        send_json(cfd, 200, e, (int)strlen(e));
+        return;
     }
-    off += snprintf(json + off, sizeof(json) - off, "]");
+
+    struct rec_entry {
+        char name[256];
+        long size;
+    };
+    int cap = 64, cnt = 0;
+    struct rec_entry *list = malloc(sizeof(struct rec_entry) * cap);
+    if (!list) { closedir(d); const char *e = "[]"; send_json(cfd, 200, e, 2); return; }
+
+    struct dirent *e;
+    while ((e = readdir(d)) != NULL) {
+        const char *name = e->d_name;
+        if (name[0] == '.') continue;
+        size_t l = strlen(name);
+        if (l < 5 || l >= sizeof(list[0].name) || strcmp(name + l - 4, ".mp4")) continue;
+        char path[512];
+        snprintf(path, sizeof(path), "%s/%s", g_storage_dir, name);
+        struct stat st;
+        if (stat(path, &st) != 0) continue;
+        if (cnt >= cap) {
+            cap *= 2;
+            struct rec_entry *nl = realloc(list, sizeof(struct rec_entry) * cap);
+            if (!nl) break;      /* 放不下就到此为止，已收集的照常返回 */
+            list = nl;
+        }
+        strncpy(list[cnt].name, name, sizeof(list[cnt].name) - 1);
+        list[cnt].name[sizeof(list[cnt].name) - 1] = 0;
+        list[cnt].size = (long)st.st_size;
+        cnt++;
+    }
+    closedir(d);
+
+    /* 按名字降序（最新在前）——文件名含时间戳 rec_YYYYMMDD_HHMMSS_NN.mp4 */
+    qsort(list, cnt, sizeof(struct rec_entry),
+          (int (*)(const void *, const void *))strcmp_desc);
+
+    /* 计算所需缓冲区大小：每条最大 {"name":"<255>","size":<20>} ≈ 290 字节 */
+    size_t need = 2;  /* "[]" */
+    for (int i = 0; i < cnt; i++)
+        need += strlen(list[i].name) + 32 + (i ? 1 : 0);
+    char *json = malloc(need + 16);
+    if (!json) { free(list); const char *e = "[]"; send_json(cfd, 200, e, 2); return; }
+
+    int off = 0;
+    off += snprintf(json + off, need + 16 - off, "[");
+    for (int i = 0; i < cnt; i++) {
+        off += snprintf(json + off, need + 16 - off,
+            "%s{\"name\":\"%s\",\"size\":%ld}",
+            i ? "," : "", list[i].name, list[i].size);
+    }
+    off += snprintf(json + off, need + 16 - off, "]");
+
     send_json(cfd, 200, json, off);
+    free(json);
+    free(list);
 }
 
 /* ─── /rec/<name> mp4 file serve with Range support ─── */

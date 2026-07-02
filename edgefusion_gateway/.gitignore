@@ -1,0 +1,9 @@
+build/
+*.o
+*.d
+
+# 含凭证，勿提交
+config/gateway.conf
+
+# IDE
+.vscode/

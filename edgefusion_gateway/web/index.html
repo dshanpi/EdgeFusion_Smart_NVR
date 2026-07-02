@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EdgeFusion NVR</title>
+<link rel="stylesheet" href="/style.css?v=3">
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-mark"><span></span></span>
+    <div class="logo-text">
+      <span class="logo-title">EdgeFusion</span>
+      <span class="logo-sub">NVR · 边侧网关</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#live" class="active" data-page="live">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H4z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2 5v11M22 5v11M8 20h8M9 16v4M15 16v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>实时预览</span>
+    </a>
+    <a href="#recordings" data-page="recordings">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>录像回放</span>
+    </a>
+    <a href="#events" data-page="events">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 17v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>事件告警</span>
+    </a>
+    <a href="#settings" data-page="settings">
+      <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>系统设置</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-foot">
+    <div class="sys-row">
+      <span class="sys-dot" id="sys-stream-dot"></span>
+      <span class="sys-label">视频源</span>
+      <span class="sys-val" id="sys-stream-val">离线</span>
+    </div>
+    <div class="sys-row">
+      <span class="sys-dot rec" id="sys-rec-dot"></span>
+      <span class="sys-label">录像</span>
+      <span class="sys-val" id="sys-rec-val">空闲</span>
+    </div>
+    <div class="sys-row">
+      <span class="sys-dot ai" id="sys-ai-dot"></span>
+      <span class="sys-label">云端AI</span>
+      <span class="sys-val" id="sys-ai-val">禁用</span>
+    </div>
+    <div class="sidebar-clock" id="sidebar-clock">--:--:--</div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-crumb">EdgeFusion NVR</span>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-title" id="topbar-title">实时预览</span>
+    </div>
+    <div class="topbar-right">
+      <span class="pill" id="pill-stream"><span class="pill-dot"></span><span>NO SIGNAL</span></span>
+      <span class="pill" id="pill-rec" hidden><span class="pill-dot rec"></span><span>REC</span></span>
+      <span class="topbar-host" id="topbar-host">192.168.1.59</span>
+    </div>
+  </header>
+  <div class="content" id="content"></div>
+</main>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script src="/app.js?v=3"></script>
+</body>
+</html>

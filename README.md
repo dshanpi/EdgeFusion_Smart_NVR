@@ -19,11 +19,8 @@
 |------|------|
 | [`edgefusion_vision/`](edgefusion_vision/README.md) | **端侧**：V821 sample 工程，MIPI CSI → H.264 硬编码 → RTSP 推流 `rtsp://<V821-IP>:8554/ch0` |
 | [`edgefusion_gateway/`](edgefusion_gateway/README.md) | **边侧**：IMX6ULL 网关守护进程，拉流录像 + 关键帧上云 + 事件入库 + Web/RTSP |
-| [`v821_mpp_ex_compile/`](v821_mpp_ex_compile/README.md) | V821 sample 的干净基线副本（与 `edgefusion_vision` 同源，无运行配置） |
-| [`PROJECT_INTRO.md`](PROJECT_INTRO.md) | **项目介绍文档**：概览、架构、使用、模块（最完整的入口文档） |
-| [`IMX6ULL_V821_Project.md`](IMX6ULL_V821_Project.md) | 立项书：背景、硬件选型、技术方案、实施计划 |
 
-> 日常开发用 `edgefusion_vision`（含调好的运行配置和 RTSP URL 打印）；`v821_mpp_ex_compile` 是干净基线，仅作参考/对照。
+> 日常开发用 `edgefusion_vision`（含调好的运行配置和 RTSP URL 打印）。
 
 ---
 

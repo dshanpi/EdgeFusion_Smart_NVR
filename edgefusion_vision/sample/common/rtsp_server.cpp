@@ -198,12 +198,6 @@ void rtsp_start(int id)
     MediaStream *stream = gpRtspStream[id];
 
     std::string url_ = stream->streamURL();
-    /* RTSP 推流服务正式开始监听, 打印推流地址便于客户端拉流 */
-    printf("============================================================\n");
-    printf("   RTSP server started, pull url:\n");
-    printf("   %s\n", url_.c_str());
-    printf("   (e.g. ffplay %s)\n", url_.c_str());
-    printf("============================================================\n");
     rtsp->runWithNewThread();
 }
 

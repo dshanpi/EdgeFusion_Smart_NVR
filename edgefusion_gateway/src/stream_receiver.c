@@ -27,11 +27,13 @@ static int open_input(const gateway_conf_t *cfg, AVFormatContext **pic, int *vst
     if (!ic) { LOG_ERR("avformat_alloc_context 失败"); return -1; }
 
     /* RTSP 选项：贴近板子 ffmpeg 命令行成功配置（仅 rtsp_transport），
-     * 额外加探测限制以减少 find_stream_info 耗时与解码噪声 */
+     * 探测窗口要够大以收到首个 IDR(SPS/PPS)——sample_rtsp 在线编码 + 默认 GOP，
+     * 首个关键帧来得比 smartIPC 晚，1s/512KB 收不够帧会报 "not enough frames
+     * to estimate rate" / "Could not find codec parameters"。放宽到 5s/10MB。 */
     AVDictionary *opts = NULL;
     av_dict_set(&opts, "rtsp_transport", cfg->rtsp_transport, 0);
-    av_dict_set(&opts, "analyzeduration", "1000000", 0);  /* 1s */
-    av_dict_set(&opts, "probesize",         "524288", 0); /* 512KB */
+    av_dict_set(&opts, "analyzeduration", "5000000", 0);   /* 5s */
+    av_dict_set(&opts, "probesize",         "10485760", 0); /* 10MB */
     av_dict_set(&opts, "fflags", "+discardcorrupt", 0);
 
     int ret = avformat_open_input(&ic, cfg->rtsp_url, NULL, &opts);

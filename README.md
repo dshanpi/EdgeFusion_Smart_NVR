@@ -76,17 +76,17 @@ adb devices   # 应同时看到 100ask_IMX6ULL 和 4c48410491c30a72512
 
 ```bash
 cd ~/EdgeFusion/edgefusion_vision
-./build.sh                                    # 产出 output/sample_smartIPC_demo_strip
+./build.sh                                    # 产出 output/sample_rtsp_strip
 
-adb -s 4c48410491c30a72512 push output/sample_smartIPC_demo_strip /mnt/extsd/sample_smartIPC_demo
-adb -s 4c48410491c30a72512 push output/sample_smartIPC_demo.conf   /mnt/extsd/
-adb -s 4c48410491c30a72512 shell 'chmod +x /mnt/extsd/sample_smartIPC_demo'
+adb -s 4c48410491c30a72512 push output/sample_rtsp_strip /mnt/extsd/sample_rtsp
+adb -s 4c48410491c30a72512 push output/sample_rtsp.conf   /mnt/extsd/
+adb -s 4c48410491c30a72512 shell 'chmod +x /mnt/extsd/sample_rtsp'
 ```
 
 **必须从串口启动**（V821 无 setsid，adb 后台进程会随会话退出被杀）：
 ```bash
 sudo stty -F /dev/ttyUSB0 115200 cs8 -cstopb -parenb -ixon -ixoff raw -echo
-sudo bash -c 'printf "cd /mnt/extsd && ./sample_smartIPC_demo -path /mnt/extsd/sample_smartIPC_demo.conf > /mnt/extsd/run.log 2>&1 &\r\n" > /dev/ttyUSB0'
+sudo bash -c 'printf "cd /mnt/extsd && ./sample_rtsp -path /mnt/extsd/sample_rtsp.conf > /mnt/extsd/run.log 2>&1 &\r\n" > /dev/ttyUSB0'
 ```
 
 确认推流地址（IP 随 wlan0 DHCP 变）：

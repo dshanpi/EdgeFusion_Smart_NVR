@@ -82,21 +82,12 @@ USER_INCS := $(addprefix -I ,$(USER_INC_DIRS)) $(LINUX_UAPI_INCS)
 CFLAGS  := $(CCFLAGS) $(DEFINES) $(USER_INCS) $(AWCHIP_CFLAGS) $(CEDARX_EXT_CFLAGS)
 CXXFLAGS:= $(CCFLAGS) $(DEFINES) $(USER_INCS) $(AWCHIP_CFLAGS) $(CEDARX_EXT_CFLAGS)
 
-#----------------------- sample_smartIPC_demo 源文件 -----------------------
-# 与 SDK tina.mk 中 sample_smartIPC_demo 的 SRCCS 一致 (显式列出，避免误编译多余 common 文件)
+#----------------------- sample_rtsp 源文件 -----------------------
+# 与 SDK tina.mk 中 sample_rtsp 的 SRCCS 一致：仅 3 个文件，纯 RTSP 推流，无录像/检测。
 APP_SRCS := \
-	sample_smartIPC_demo/sample_smartIPC_demo.c \
+	sample_rtsp/sample_rtsp.c \
 	common/rtsp_server.cpp \
-	common/sdcard_manager.c \
-	common/record.c \
-	common/sample_common_venc.c \
-	common/tdm_raw_process.c \
-	common/de_hw_scale.c \
-	common/aiservice_pdet.c \
-	common/motion_detect_common.c \
-	common/motion_pdet.c \
-	common/sample_common_isp.c \
-	common/sample_common_osd.c
+	common/sample_common_venc.c
 
 USER_SRCS := $(addprefix $(USER_SRC_BASE_DIR)/,$(APP_SRCS))
 
@@ -127,7 +118,7 @@ mpp_lib := \
 	-llog -lasound
 
 #----------------------- 编译规则 -----------------------
-APP_BIN_NAME := sample_smartIPC_demo
+APP_BIN_NAME := sample_rtsp
 
 build_app: $(USER_OBJS_OUT)
 	@mkdir -p $(OUTPUT_DIR)

@@ -3,14 +3,14 @@
 # V821 eyesee-mpp sample 外编脚本
 # 参考 edgefusion_vision/build.sh (V853) 改写。
 # 用法: ./build.sh
-#   成功后在 output/ 下生成 sample_smartIPC_demo 与 strip 后的版本。
+#   成功后在 output/ 下生成 sample_rtsp 与 strip 后的版本。
 # =============================================================================
 set -e
 
 cd "$(dirname "$0")"
 sdk_dir="$(pwd)"
 
-APP_BIN_NAME=sample_smartIPC_demo
+APP_BIN_NAME=sample_rtsp
 
 # 工具链前缀 (riscv32-linux-musl-gcc/g++, musl libc)
 toolchain_dir="${sdk_dir}/toolchain/bin"

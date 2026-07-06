@@ -12,8 +12,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 static volatile sig_atomic_t g_running = 1;
+
+/* 枚举本机非 loopback 的 IPv4 地址，打印网关访问入口（Web + RTSP）。
+ * 一台板子可能有 eth0/wlan0 等多个网卡，全部列出，方便用户知道用哪个 IP 访问。 */
+static void print_access_urls(const gateway_conf_t *cfg)
+{
+    struct ifaddrs *ifap = NULL, *ifa;
+    char ip[INET_ADDRSTRLEN];
+    int found = 0;
+
+    printf("\n========================================\n");
+    printf(" 网关访问地址\n");
+    printf("========================================\n");
+
+    if (getifaddrs(&ifap) != 0) {
+        printf(" (获取本机 IP 失败，请用 ifconfig 查看板子 IP)\n");
+        printf(" Web 管理界面 : http://<板子IP>:%d\n", cfg->web_port);
+        if (cfg->rtsp_server_enable)
+            printf(" RTSP 转发    : rtsp://<板子IP>:%d/track0\n", cfg->rtsp_server_port);
+        printf("========================================\n\n");
+        return;
+    }
+
+    for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr) continue;
+        if (ifa->ifa_addr->sa_family != AF_INET) continue;
+        struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
+        if (sa->sin_addr.s_addr == htonl(INADDR_LOOPBACK)) continue;  /* 跳过 127.0.0.1 */
+        if (!inet_ntop(AF_INET, &sa->sin_addr, ip, sizeof(ip))) continue;
+        found = 1;
+        printf(" [%s] %s\n", ifa->ifa_name, ip);
+        printf("   Web 管理界面 : http://%s:%d\n", ip, cfg->web_port);
+        if (cfg->rtsp_server_enable)
+            printf("   RTSP 转发    : rtsp://%s:%d/track0\n", ip, cfg->rtsp_server_port);
+    }
+    freeifaddrs(ifap);
+
+    if (!found) {
+        printf(" (未发现可用的非环回 IPv4 地址，请检查网络)\n");
+        printf(" Web 管理界面 : http://<板子IP>:%d\n", cfg->web_port);
+        if (cfg->rtsp_server_enable)
+            printf(" RTSP 转发    : rtsp://<板子IP>:%d/track0\n", cfg->rtsp_server_port);
+    }
+    printf("========================================\n\n");
+    fflush(stdout);
+}
 
 static void on_signal(int sig)
 {
@@ -102,6 +152,9 @@ int main(int argc, char *argv[])
     if (web_start(&cfg) != 0) {
         LOG_WRN("Web 模块启动失败（不影响录像）");
     }
+
+    /* 打印网关访问地址（Web + RTSP），便于用户知道用哪个 IP 访问 */
+    print_access_urls(&cfg);
 
     LOG_INF("进入主循环，等待信号退出...");
     while (g_running) {
